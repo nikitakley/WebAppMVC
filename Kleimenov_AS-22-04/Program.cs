@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Kleimenov_AS_22_04.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<Kleimenov_AS_22_04Context>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Kleimenov_AS_22_04Context") ?? throw new InvalidOperationException("Connection string 'Kleimenov_AS_22_04Context' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
