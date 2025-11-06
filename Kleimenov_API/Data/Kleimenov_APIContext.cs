@@ -19,6 +19,8 @@ namespace Kleimenov_API.Data
         public DbSet<OrderItem> OrderItems { get; set; } = default!;
         public DbSet<OrderStatus> OrderStatuses { get; set; } = default!;
 
+        public DbSet<User> Users { get; set; }
+
         // задаем связи между таблицами
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,11 +68,14 @@ namespace Kleimenov_API.Data
                 .HasForeignKey(oi => oi.DishId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Payment)
+                .WithOne(p => p.Order)
+                .HasForeignKey<Payment>(p => p.OrderId);
+
             modelBuilder.Entity<Payment>()
-                .HasOne(p => p.Order)
-                .WithMany(o => o.Payments)
-                .HasForeignKey(p => p.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasIndex(p => p.OrderId)
+                .IsUnique();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Kleimenov_API.Models;
 
@@ -15,6 +16,7 @@ public class Payment
     [Display(Name = "Paid At")]
     public DateTime PaidAt { get; set; }
 
+    [JsonIgnore]
     [ForeignKey(nameof(OrderId))]
     public Order Order { get; set; } = null!;
 }

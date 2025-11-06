@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Kleimenov_API.Models;
 public class Order
@@ -15,25 +15,32 @@ public class Order
 
     public int StatusId { get; set; }
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal TotalPrice { get; set; }
+    //[Column(TypeName = "decimal(10, 2)")]
+    //public decimal TotalPrice { get; set; }
 
     [Display(Name = "Created At")]
     public DateTime CreatedAt { get; set; }
 
+    [JsonIgnore]
     [ForeignKey(nameof(CustomerId))]
     public Customer Customer { get; set; } = null!;
 
+    [JsonIgnore]
     [ForeignKey(nameof(CourierId))]
     public Courier Courier { get; set; } = null!;
 
+    [JsonIgnore]
     [ForeignKey(nameof(RestaurantId))]
     public Restaurant Restaurant { get; set; } = null!;
 
+    [JsonIgnore]
     [ForeignKey(nameof(StatusId))]
     public OrderStatus Status { get; set; } = null!;
 
+    [JsonIgnore]
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
 
-    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    [JsonIgnore]
+    public Payment? Payment { get; set; }
+    //public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }
