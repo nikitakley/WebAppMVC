@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace Kleimenov_API.Controllers;
 
 [ApiController]
-//[Route("api/[controller]")]
 [Route("api/couriers")]
 [Authorize]
 public class CouriersController : ControllerBase
@@ -21,14 +20,14 @@ public class CouriersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var couriers = await _courierService.GetAllAsync();
+        var couriers = await _courierService.GetAllCouriersAsync();
         return Ok(couriers);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCourier(int id)
     {
-        var courier = await _courierService.GetByIdAsync(id);
+        var courier = await _courierService.GetCourierByIdAsync(id);
         if (courier == null)
             return NotFound();
         return Ok(courier);

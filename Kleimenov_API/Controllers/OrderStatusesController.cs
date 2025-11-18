@@ -6,61 +6,27 @@ using Microsoft.AspNetCore.Authorization;
 namespace Kleimenov_API.Controllers;
 
 [ApiController]
-//[Route("api/[controller]")]
-[Route("api/order-statuses")]
+[Route("api/statuses")]
 [Authorize]
 public class OrderStatusesController : ControllerBase
 {
-    private readonly OrderStatusService _orderStatusService;
+    private readonly OrderService _orderService;
 
-    public OrderStatusesController(OrderStatusService orderStatusService)
+    public OrderStatusesController(OrderService orderService)
     {
-        _orderStatusService = orderStatusService;
+        _orderService = orderService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orderStatuses = await _orderStatusService.GetAllAsync();
+        var orderStatuses = await _orderService.GetAllOrderStatusesAsync();
 
-        var dtos = orderStatuses.Select(s => new OrderStatusDto(
-            s.OrderStatusId,
-            s.Status ?? string.Empty
-        ));
-        
-        return Ok(dtos);
+        var response = orderStatuses.Select(orderStatus => new OrderStatusDto
+        {
+            OrderStatusId = orderStatus.OrderStatusId,
+            Status = orderStatus.Status
+        }).ToList();
+        return Ok(response);
     }
-
-    //[HttpGet("{id}")]
-    //public async Task<IActionResult> GetStatus(int id)
-    //{
-    //    var orderStatus = await _orderStatusService.GetByIdAsync(id);
-    //    if (orderStatus == null)
-    //        return NotFound();
-    //    return Ok(orderStatus);
-    //}
-
-    //[HttpPost]
-    //public async Task<IActionResult> CreateStatus([FromBody] OrderStatusDto orderStatusDto)
-    //{
-    //    var created = await _orderStatusService.CreateAsync(
-    //        orderStatusDto.Status
-    //    );
-
-    //    return CreatedAtAction(nameof(GetStatus), new { id = created.OrderStatusId }, created);
-    //}
-
-    //[HttpPut("{id}")]
-    //public async Task<IActionResult> UpdateStatus(int id, [FromBody] OrderStatusDto orderStatusDto)
-    //{
-    //    await _orderStatusService.UpdateAsync(id, orderStatusDto.Status);
-    //    return NoContent();
-    //}
-
-    //[HttpDelete("{id}")]
-    //public async Task<IActionResult> DeleteStatus(int id)
-    //{
-    //    await _orderStatusService.DeleteAsync(id);
-    //    return NoContent();
-    //}
 }

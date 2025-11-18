@@ -1,60 +1,43 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Kleimenov_API.Services;
 using Kleimenov_API.Dto;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Kleimenov_API.Controllers;
 
 [ApiController]
-//[Route("api/[controller]")]
-[Route("api/order-items")]
+[Route("api/items")]
 [Authorize]
 public class OrderItemsController : ControllerBase
 {
-    private readonly OrderItemService _orderItemService;
+    private readonly OrderService _orderService;
 
-    public OrderItemsController(OrderItemService orderItemService)
+    public OrderItemsController(OrderService orderService)
     {
-        _orderItemService = orderItemService;
+        _orderService = orderService;
     }
-
-    //[HttpGet("by-order-id")]
-    //public async Task<IActionResult> GetByOrderId([FromQuery] int? orderId)
-    //{
-    //    var items = await _orderItemService.GetByOrderIdAsync(orderId);
-    //    return Ok(items);
-    //}
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orderItems = await _orderItemService.GetAllAsync();
+        var orderItems = await _orderService.GetAllOrderItemsAsync();
         return Ok(orderItems);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderItem(int id)
     {
-        var item = await _orderItemService.GetByIdAsync(id);
-        if (item == null)
+        var orderItem = await _orderService.GetOrderItemByIdAsync(id);
+        if (orderItem == null)
             return NotFound();
-        return Ok(item);
-    }
-
-    //GET /api/order-items/by-order/{orderId}
-    [HttpGet("by-order/{orderId}")]
-    public async Task<IActionResult> GetItemsByOrder(int orderId)
-    {
-        var items = await _orderItemService.GetItemsByOrderAsync(orderId);
-        return Ok(items);
+        return Ok(orderItem);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> CreateOrderItem([FromBody] OrderItemDto dto)
+    public async Task<IActionResult> CreateOrderItem([FromBody] OrderItemRequestDto dto)
     {
-        var created = await _orderItemService.CreateAsync(
+        var created = await _orderService.CreateOrderItemAsync(
             dto.OrderId, 
             dto.DishId, 
             dto.Quantity, 
@@ -66,9 +49,9 @@ public class OrderItemsController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateOrderItem(int id, [FromBody] OrderItemResponseDto dto)
+    public async Task<IActionResult> UpdateOrderItem(int id, [FromBody] OrderItemRequestQuantityDto dto)
     {
-        await _orderItemService.UpdateAsync(id, dto.Quantity, dto.UnitPrice);
+        await _orderService.UpdateOrderItemAsync(id, dto.Quantity);
         return NoContent();
     }
 
@@ -76,7 +59,7 @@ public class OrderItemsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrderItem(int id)
     {
-        await _orderItemService.DeleteAsync(id);
+        await _orderService.DeleteOrderItemAsync(id);
         return NoContent();
     }
 }

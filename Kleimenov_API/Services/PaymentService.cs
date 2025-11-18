@@ -13,31 +13,23 @@ public class PaymentService
         _context = context;
     }
 
-    public async Task<IEnumerable<Payment>> GetAllAsync()
+    public async Task<IEnumerable<Payment>> GetAllPaymentsAsync()
     {
-        return await _context.Payments
-            .Include(p => p.Order)
-            .ThenInclude(o => o.Customer)
-            .ToListAsync();
+        return await _context.Payments.ToListAsync();
     }
 
-    public async Task<Payment?> GetByIdAsync(int paymentId)
+    public async Task<Payment?> GetPaymentByIdAsync(int paymentId)
     {
-        return await _context.Payments
-            .Include(p => p.Order)
-            .ThenInclude(o => o.Customer)
-            .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
+        return await _context.Payments.FindAsync(paymentId);
     }
 
-    public async Task<Payment?> GetByOrderIdAsync(int orderId)
+    public async Task<Payment?> GetPaymentByOrderIdAsync(int orderId)
     {
-        return await _context.Payments
-            .Include(p => p.Order)
-            .ThenInclude(o => o.Customer)
-            .FirstOrDefaultAsync(p => p.OrderId == orderId);
+        var payment = await _context.Payments.FirstOrDefaultAsync(p => p.OrderId == orderId);
+        return payment;
     }
 
-    public async Task<Payment> CreateAsync(int orderId)
+    public async Task<Payment> CreatePaymentAsync(int orderId)
     {
         bool exists = await _context.Payments.AnyAsync(p => p.OrderId == orderId);
         if (exists)

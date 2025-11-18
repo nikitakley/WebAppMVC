@@ -1,44 +1,56 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Kleimenov_API.Services;
 using Kleimenov_API.Dto;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Kleimenov_API.Controllers;
 
 [ApiController]
-//[Route("api/[controller]")]
 [Route("api/restaurants")]
 [Authorize]
 public class RestaurantsController : ControllerBase
 {
-    private readonly RestaurantService _restaurantService;
+    private readonly RestaurantDishService _restaurantDishService;
 
-    public RestaurantsController(RestaurantService restaurantService)
+    public RestaurantsController(RestaurantDishService restaurantDishService)
     {
-        _restaurantService = restaurantService;
+        _restaurantDishService = restaurantDishService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var restaurants = await _restaurantService.GetAllAsync();
-        return Ok(restaurants);
+        var restaurants = await _restaurantDishService.GetAllRestaurantsAsync();
+
+        var response = restaurants.Select(restaurant => new RestaurantResponseDto
+        {
+            RestaurantId = restaurant.RestaurantId,
+            Name = restaurant.Name,
+            Rating = restaurant.Rating
+        }).ToList();
+        return Ok(response);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRestaurant(int id)
     {
-        var restaurant = await _restaurantService.GetByIdAsync(id);
+        var restaurant = await _restaurantDishService.GetRestaurantByIdAsync(id);
         if (restaurant == null)
             return NotFound();
-        return Ok(restaurant);
+
+        var response = new RestaurantResponseDto
+        {
+            RestaurantId = restaurant.RestaurantId,
+            Name = restaurant.Name,
+            Rating = restaurant.Rating
+        };
+        return Ok(response);
     }
 
-    [HttpGet("{id}/{availability}")]
-    public async Task<IActionResult> GetRestaurantMenu(int id, bool availability)
+    [HttpGet("{id}/menu")]
+    public async Task<IActionResult> GetRestaurantMenu(int id)
     {
-        var restaurant = await _restaurantService.GetByIdMenuAsync(id, availability);
+        var restaurant = await _restaurantDishService.GetMenuByIdAsync(id);
         if (restaurant == null)
             return NotFound();
         return Ok(restaurant);
@@ -46,9 +58,9 @@ public class RestaurantsController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> CreateRestaurant([FromBody] RestaurantDto restaurantDto)
+    public async Task<IActionResult> CreateRestaurant([FromBody] RestaurantRequestDto restaurantDto)
     {
-        var created = await _restaurantService.CreateAsync(
+        var created = await _restaurantDishService.CreateRestaurantAsync(
             restaurantDto.Name,
             restaurantDto.Rating
         );
@@ -58,9 +70,9 @@ public class RestaurantsController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateRestaurant(int id, [FromBody] RestaurantDto restaurantDto)
+    public async Task<IActionResult> UpdateRestaurant(int id, [FromBody] RestaurantRequestDto restaurantDto)
     {
-        await _restaurantService.UpdateAsync(id, restaurantDto.Name, restaurantDto.Rating);
+        await _restaurantDishService.UpdateRestaurantAsync(id, restaurantDto.Name, restaurantDto.Rating);
         return NoContent();
     }
 
@@ -68,7 +80,7 @@ public class RestaurantsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRestaurant(int id)
     {
-        await _restaurantService.DeleteAsync(id);
+        await _restaurantDishService.DeleteRestaurantAsync(id);
         return NoContent();
     }
 }

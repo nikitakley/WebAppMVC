@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Kleimenov_API.Dto;
 
-public record RestaurantDto(
+public record RestaurantRequestDto(
     [Required] string Name,
     [Required] decimal Rating
 );

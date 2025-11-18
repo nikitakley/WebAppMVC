@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace Kleimenov_API.Controllers;
 
 [ApiController]
-//[Route("api/[controller]")]
 [Route("api/payments")]
 [Authorize]
 public class PaymentsController : ControllerBase
@@ -21,35 +20,35 @@ public class PaymentsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var payments = await _paymentService.GetAllAsync();
+        var payments = await _paymentService.GetAllPaymentsAsync();
         return Ok(payments);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPayment(int id)
     {
-        var payment = await _paymentService.GetByIdAsync(id);
+        var payment = await _paymentService.GetPaymentByIdAsync(id);
         if (payment == null)
             return NotFound();
         return Ok(payment);
     }
 
-    [HttpGet("by-order/{orderId}")]
-    public async Task<IActionResult> GetByOrderId(int orderId)
+    [HttpGet("order/{orderId}")]
+    public async Task<IActionResult> GetPaymentByOrderId(int orderId)
     {
-        var payment = await _paymentService.GetByOrderIdAsync(orderId);
+        var payment = await _paymentService.GetPaymentByOrderIdAsync(orderId);
         if (payment == null)
             return NotFound();
         return Ok(payment);
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPost("{orderId}")]
+    [HttpPost("order/{orderId}")]
     public async Task<IActionResult> CreatePayment(int orderId)
     {
         try
         {
-            var created = await _paymentService.CreateAsync(orderId);
+            var created = await _paymentService.CreatePaymentAsync(orderId);
             return CreatedAtAction(nameof(GetPayment), new { id = created.PaymentId }, created);
         }
         catch (InvalidOperationException ex)

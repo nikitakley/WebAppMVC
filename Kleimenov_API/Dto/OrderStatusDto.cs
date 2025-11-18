@@ -2,7 +2,10 @@
 
 namespace Kleimenov_API.Dto;
 
-public record OrderStatusDto(
-    int OrderStatusId,
-    string Status
-);
+public class OrderStatusDto
+{
+    public int OrderStatusId { get; set; }
+
+    [Required]
+    public string? Status { get; set; }
+}

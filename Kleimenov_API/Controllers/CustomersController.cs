@@ -3,11 +3,9 @@ using Kleimenov_API.Services;
 using Kleimenov_API.Dto;
 using Microsoft.AspNetCore.Authorization;
 
-
 namespace Kleimenov_API.Controllers;
 
 [ApiController]
-//[Route("api/[controller]")]
 [Route("api/customers")]
 [Authorize]
 public class CustomersController : ControllerBase
@@ -22,25 +20,40 @@ public class CustomersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var customers = await _customerService.GetAllAsync();
-        return Ok(customers);
+        var customers = await _customerService.GetAllCustomersAsync();
+
+        var response = customers.Select(customer => new CustomerDto
+        {
+            FullName = customer.FullName,
+            Email = customer.Email,
+            Phone = customer.Phone,
+            Address = customer.Address
+        }).ToList();
+        return Ok(response);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCustomer(int id)
     {
-        var customer = await _customerService.GetByIdAsync(id);
+        var customer = await _customerService.GetCustomerByIdAsync(id);
         if (customer == null) 
             return NotFound();
 
-        return Ok(customer);
+        var response = new CustomerDto
+        {
+            FullName = customer.FullName,
+            Email = customer.Email,
+            Phone = customer.Phone,
+            Address = customer.Address
+        };
+        return Ok(response);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateCustomer([FromBody] CustomerDto customerDto)
     {
-        var created = await _customerService.CreateAsync(
+        var created = await _customerService.CreateCustomerAsync(
             customerDto.FullName,
             customerDto.Email,
             customerDto.Phone,
@@ -54,7 +67,7 @@ public class CustomersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDto customerDto)
     {
-        await _customerService.UpdateAsync(id, customerDto.FullName, customerDto.Email, customerDto.Phone, customerDto.Address);
+        await _customerService.UpdateCustomerAsync(id, customerDto.FullName, customerDto.Email, customerDto.Phone, customerDto.Address);
         return NoContent();
     }
 
@@ -62,7 +75,7 @@ public class CustomersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCustomer(int id)
     {
-        await _customerService.DeleteAsync(id);
+        await _customerService.DeleteCustomerAsync(id);
         return NoContent();
     }
 }

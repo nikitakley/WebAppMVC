@@ -13,22 +13,17 @@ public class CustomerService
         _context = context;
     }
 
-    public async Task<IEnumerable<Customer>> GetAllAsync()
+    public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
     {
-        return await _context.Customers
-            .Include(c => c.Orders)
-            .ToListAsync();
+        return await _context.Customers.ToListAsync();
     }
 
-    public async Task<Customer?> GetByIdAsync(int customerId)
+    public async Task<Customer?> GetCustomerByIdAsync(int customerId)
     {
-        //return await _context.Customers.FindAsync(customerId);
-        return await _context.Customers
-            .Include(c => c.Orders)
-            .FirstOrDefaultAsync(c => c.CustomerId == customerId);
+        return await _context.Customers.FindAsync(customerId);
     }
 
-    public async Task<Customer> CreateAsync(string? fullName, string? email, string? phone, string? address)
+    public async Task<Customer> CreateCustomerAsync(string? fullName, string? email, string? phone, string? address)
     {
         var customer = new Customer
         {
@@ -44,7 +39,7 @@ public class CustomerService
         return customer;
     }
 
-    public async Task UpdateAsync(int customerId, string? fullName, string? email, string? phone, string? address)
+    public async Task UpdateCustomerAsync(int customerId, string? fullName, string? email, string? phone, string? address)
     {
         var customer = await _context.Customers.FindAsync(customerId);
         if (customer != null)
@@ -58,7 +53,7 @@ public class CustomerService
         }
     }
 
-    public async Task DeleteAsync(int customerId)
+    public async Task DeleteCustomerAsync(int customerId)
     {
         var customer = await _context.Customers.FindAsync(customerId);
         if (customer != null)

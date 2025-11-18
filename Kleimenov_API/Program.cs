@@ -16,13 +16,13 @@ builder.Services.AddDbContext<Kleimenov_APIContext>(options =>
 
 // Add services to the container.
 builder.Services.AddScoped<CustomerService>();
-builder.Services.AddScoped<RestaurantService>();
-builder.Services.AddScoped<DishService>();
-builder.Services.AddScoped<CourierService>();
-builder.Services.AddScoped<OrderStatusService>();
+builder.Services.AddScoped<RestaurantDishService>();
 builder.Services.AddScoped<OrderService>();
-builder.Services.AddScoped<OrderItemService>();
+builder.Services.AddScoped<CourierService>();
 builder.Services.AddScoped<PaymentService>();
+
+// для статистики
+builder.Services.AddScoped<StatisticsService>();
 
 // Для аутентификации
 builder.Services.AddScoped<AuthService>();

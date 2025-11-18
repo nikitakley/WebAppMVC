@@ -1,6 +1,5 @@
 ﻿using Kleimenov_API.Data;
 using Kleimenov_API.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kleimenov_API.Services;
@@ -14,14 +13,14 @@ public class CourierService
         _context = context;
     }
 
-    public async Task<IEnumerable<Courier>> GetAllAsync()
+    public async Task<IEnumerable<Courier>> GetAllCouriersAsync()
     {
         return await _context.Couriers
             .Include(c => c.Orders)
             .ToListAsync();
     }
 
-    public async Task<Courier?> GetByIdAsync(int courierId)
+    public async Task<Courier?> GetCourierByIdAsync(int courierId)
     {
         return await _context.Couriers
             .Include(c => c.Orders)

@@ -6,29 +6,35 @@ using Microsoft.AspNetCore.Authorization;
 namespace Kleimenov_API.Controllers;
 
 [ApiController]
-//[Route("api/[controller]")]
 [Route("api/dishes")]
 [Authorize]
 public class DishesController : ControllerBase
 {
-    private readonly DishService _dishService;
+    private readonly RestaurantDishService _restaurantDishService;
 
-    public DishesController(DishService dishService)
+    public DishesController(RestaurantDishService restaurantDishService)
     {
-        _dishService = dishService;
+        _restaurantDishService = restaurantDishService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var dishes = await _dishService.GetAllAsync();
+        var dishes = await _restaurantDishService.GetAllDishesAsync();
+        return Ok(dishes);
+    }
+
+    [HttpGet("availability")]
+    public async Task<IActionResult> GetAllAvailable([FromQuery] bool? isAvailable)
+    {
+        var dishes = await _restaurantDishService.GetAllDishesByAvailabilityAsync(isAvailable);
         return Ok(dishes);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetDish(int id)
     {
-        var dish = await _dishService.GetByIdAsync(id);
+        var dish = await _restaurantDishService.GetDishByIdAsync(id);
         if (dish == null)
             return NotFound();
         return Ok(dish);
@@ -38,7 +44,7 @@ public class DishesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateDish([FromBody] DishDto dishDto)
     {
-        var created = await _dishService.CreateAsync(
+        var created = await _restaurantDishService.CreateDishAsync(
             dishDto.RestaurantId,
             dishDto.Name,
             dishDto.Price,
@@ -52,7 +58,8 @@ public class DishesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateDish(int id, [FromBody] DishDto dishDto)
     {
-        await _dishService.UpdateAsync(id, dishDto.RestaurantId, dishDto.Name, dishDto.Price, dishDto.IsAvailable);
+        await _restaurantDishService.UpdateDishAsync(
+            id, dishDto.RestaurantId, dishDto.Name, dishDto.Price, dishDto.IsAvailable);
         return NoContent();
     }
 
@@ -60,7 +67,7 @@ public class DishesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteDish(int id)
     {
-        await _dishService.DeleteAsync(id);
+        await _restaurantDishService.DeleteDishAsync(id);
         return NoContent();
     }
 }
