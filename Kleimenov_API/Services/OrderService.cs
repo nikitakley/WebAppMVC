@@ -15,7 +15,13 @@ public class OrderService
 
     public async Task<IEnumerable<Order>> GetAllOrdersAsync()
     {
-        return await _context.Orders.ToListAsync();
+        return await _context.Orders
+            .Include(o => o.Customer)
+            .Include(o => o.Restaurant)
+            .Include(o => o.Status)
+            .Include(o => o.Items)
+                .ThenInclude(i => i.Dish)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<OrderStatus>> GetAllOrderStatusesAsync()
@@ -32,6 +38,18 @@ public class OrderService
     {
         return await _context.Orders
             .Where(o => o.StatusId == statusId)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Order>> GetAllOrdersByCustomerIdAsync(int customerId)
+    {
+        return await _context.Orders
+            .Include(o => o.Customer)
+            .Include(o => o.Restaurant)
+            .Include(o => o.Status)
+            .Include(o => o.Items)
+                .ThenInclude(i => i.Dish)
+            .Where(o => o.CustomerId == customerId)
             .ToListAsync();
     }
 

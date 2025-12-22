@@ -78,6 +78,19 @@ builder.Services.AddSwaggerGen(c => {
   });
 });
 
+
+
+// Политика CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactDev", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // порт Vite по умолчанию
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -88,36 +101,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Начальные записи в Users
+// Добавление админа
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<Kleimenov_APIContext>();
+    await db.Database.MigrateAsync();
 
-    if (!db.Users.Any())
-    {
-        var adminAccount = new User
-        {
-            Username = "admin",
-            Role = "Admin"
-        };
-        var adminPassword = new PasswordHasher<User>().HashPassword(adminAccount, "admin111");
-        adminAccount.PasswordHash = adminPassword;
-        db.Users.Add(adminAccount);
-
-        var userAccount = new User
-        {
-            Username = "user",
-            Role = "User"
-        };
-        var userPassword = new PasswordHasher<User>().HashPassword(userAccount, "user111");
-        userAccount.PasswordHash = userPassword;
-        db.Users.Add(userAccount);
-
-        db.SaveChanges();
-    }
+    await AdminConstructor.InitializeAdminAsync(db);
 }
 
 app.UseHttpsRedirection();
+
+// Для поддержки React
+app.UseCors("AllowReactDev");
 
 app.UseAuthentication();
 app.UseAuthorization();

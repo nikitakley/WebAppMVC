@@ -9,7 +9,6 @@ namespace Kleimenov_API.Data
             : base(options)
         {
         }
-
         public DbSet<Kleimenov_API.Models.Customer> Customers { get; set; } = default!;
         public DbSet<Restaurant> Restaurants { get; set; } = default!;
         public DbSet<Dish> Dishes { get; set; } = default!;
@@ -19,12 +18,17 @@ namespace Kleimenov_API.Data
         public DbSet<OrderItem> OrderItems { get; set; } = default!;
         public DbSet<OrderStatus> OrderStatuses { get; set; } = default!;
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; } = default!;
 
         // задаем связи между таблицами
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Customer)
+                .WithOne(c => c.User)             
+                .HasForeignKey<User>(u => u.CustomerId);
 
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Orders)

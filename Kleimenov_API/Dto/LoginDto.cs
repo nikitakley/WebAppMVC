@@ -1,6 +1,6 @@
 ﻿namespace Kleimenov_API.Dto;
 
-public record AuthDto
+public record LoginDto
 (
     string Username,
     string Password

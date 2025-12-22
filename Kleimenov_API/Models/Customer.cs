@@ -8,10 +8,10 @@ public class Customer
 
     [Required]
     [Display(Name = "Full Name")]
-    public string? FullName { get; set; }
+    public string FullName { get; set; } = string.Empty;
 
     [Required]
-    public string? Phone { get; set; }
+    public string Phone { get; set; } = string.Empty;
 
     [EmailAddress]
     public string? Email { get; set; }
@@ -23,4 +23,7 @@ public class Customer
     public DateTime RegisteredAt { get; set; }
 
     public ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    // связь с аутентификацией
+    public User User { get; set; } = null!;
 }

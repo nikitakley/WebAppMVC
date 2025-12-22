@@ -63,7 +63,6 @@ public class CustomersController : ControllerBase
         return CreatedAtAction(nameof(GetCustomer), new { id = created.CustomerId }, created);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDto customerDto)
     {

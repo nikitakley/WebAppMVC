@@ -14,4 +14,8 @@ public class User
 
     [Required]
     public string Role { get; set; } = "User";
+
+    // связь с профилем клиента
+    public int CustomerId { get; set; }
+    public Customer Customer { get; set; } = null!;
 }

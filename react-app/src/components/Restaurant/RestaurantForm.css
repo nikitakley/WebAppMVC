@@ -1,0 +1,59 @@
+.restaurant-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-group label {
+    font-size: 12pt;
+    color: #f0f0f0;
+    font-weight: 300;
+}
+
+.form-input {
+    padding: 0.5rem 0.75rem;
+    text-align: center;
+    font-size: 12pt;
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    border: 1px solid #708090;
+    border-radius: 0.5rem;
+    outline: none;
+    transition: border-color 0s.2s;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #16a34a;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #e0e0e0;
+}
+
+.btn-primary:hover {
+  background-color: #168f42;
+}
+
+.btn-secondary:hover {
+  background-color: #d5d5d5;
+}

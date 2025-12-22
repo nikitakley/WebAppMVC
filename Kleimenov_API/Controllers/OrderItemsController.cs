@@ -33,7 +33,6 @@ public class OrderItemsController : ControllerBase
         return Ok(orderItem);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateOrderItem([FromBody] OrderItemRequestDto dto)
     {

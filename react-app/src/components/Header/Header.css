@@ -1,0 +1,110 @@
+.header {
+    background-color: #708090;
+    color: white;
+    border-radius: 0.5rem;
+}
+
+.header .container {
+    /* max-width: 1280px; */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header .container span {
+    font-size: 12pt;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.header .logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: white;
+}
+
+.header .logo-link img {
+    height: 3.5rem;
+    width: 3.5rem;
+    object-fit: contain;
+}
+
+.header .logo-link span {
+    font-weight: 700;
+    font-size: 22pt;
+}
+
+.header .routes-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header .cart-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: white;
+}
+
+.header .cart-link img {
+    height: 2rem;
+    width: 2rem;
+    object-fit: contain;
+}
+
+.header .orders-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: white;
+}
+
+.header .orders-link img {
+    height: 2.5rem;
+    width: 2.5rem;
+    object-fit: contain;
+}
+
+.header .auth-button {
+    background-color: white;
+    color: #708090;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-size: 14pt;
+    cursor: pointer;
+    text-decoration: none;
+    /* display: inline-block; */
+    transition: background-color 0.2s;
+}
+
+.header .auth-button:hover {
+    background-color: #dbdbdb;
+}
+
+.header .auth-link {
+    background-color: white;
+    color: #708090;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14pt;
+    transition: background-color 0.2s;
+}
+
+.header .auth-link:hover {
+    background-color: #dbdbdb;
+}
