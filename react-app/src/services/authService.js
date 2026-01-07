@@ -27,8 +27,13 @@ export const authService = {
   },
 
   getCurrentToken: () => localStorage.getItem('token'),
+  
   getCurrentUser: () => {
     const user = localStorage.getItem('currentUser');
     return user ? JSON.parse(user) : null;
+  },
+
+  setCurrentUser: (user) => {
+    localStorage.setItem('currentUser', JSON.stringify(user));
   },
 };

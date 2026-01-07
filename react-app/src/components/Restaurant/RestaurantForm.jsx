@@ -52,10 +52,10 @@ export default function RestaurantForm({ initialData, onSave, onCancel }) {
             />
         </div>
         <div className='form-actions'>
-            <button type="submit" className='btn btn-primary'>
+            <button type="submit" className='btn-primary'>
             {initialData ? 'Сохранить' : 'Добавить'}
             </button>
-            <button type="button" onClick={onCancel} className='btn btn-secondary'>
+            <button type="button" onClick={onCancel} className='btn-secondary'>
             Отмена
             </button>
         </div>

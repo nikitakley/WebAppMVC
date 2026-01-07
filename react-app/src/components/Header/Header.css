@@ -71,8 +71,22 @@
 }
 
 .header .orders-link img {
-    height: 2.5rem;
-    width: 2.5rem;
+    height: 2.2rem;
+    width: 2.2rem;
+    object-fit: contain;
+}
+
+.header .profile-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: white;
+}
+
+.header .profile-link img {
+    height: 2rem;
+    width: 2rem;
     object-fit: contain;
 }
 

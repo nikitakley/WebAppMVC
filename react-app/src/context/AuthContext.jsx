@@ -17,22 +17,27 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  // Метод входа
   const login = async (username, password) => {
     const { token, customer } = await authService.login(username, password);
     setCurrentUser(customer);
+    authService.setCurrentUser(customer);
   };
 
-  // Метод выхода
   const logout = () => {
     authService.logout();
     setCurrentUser(null);
+  };
+
+  const updateCurrentUser = (updatedUser) => {
+    setCurrentUser(updatedUser);
+    authService.setCurrentUser(updatedUser);
   };
 
   const value = {
     currentUser,
     login,
     logout,
+    updateCurrentUser,
     loading
   };
 

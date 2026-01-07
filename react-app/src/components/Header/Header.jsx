@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import ilogo from '../../assets/logo.svg';
 import icart from '../../assets/cart.svg';
 import ilist from '../../assets/list.svg';
+import iprofile from '../../assets/profile.svg';
 import './Header.css'
 
 export default function Header() {
@@ -35,6 +36,10 @@ export default function Header() {
 
             <Link to="/cart" className="cart-link">
               <img src={icart} alt="Корзина" className="cart-icon" />
+            </ Link>
+
+            <Link to="/profile" className="profile-link">
+              <img src={iprofile} alt="Профиль" className="profile-icon" />
             </ Link>
 
             {currentUser ? (

@@ -7,7 +7,6 @@ namespace Kleimenov_API.Controllers;
 
 [ApiController]
 [Route("api/restaurants")]
-[Authorize]
 public class RestaurantsController : ControllerBase
 {
     private readonly RestaurantDishService _restaurantDishService;
