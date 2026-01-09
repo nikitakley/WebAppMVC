@@ -5,6 +5,7 @@ using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 public class UpdateHandler
 {
@@ -66,8 +67,36 @@ public class UpdateHandler
             else
             {
                 await _botClient.SendTextMessageAsync(
-                    chatId, "Неверный формат. Корректный пример команды: /menu 1", cancellationToken: cancellationToken);
+                    chatId, 
+                    "Неверный формат. Корректный пример команды: /menu 1", 
+                    cancellationToken: cancellationToken);
             }
+            return;
+        }
+
+        if (text.StartsWith("/order ", StringComparison.OrdinalIgnoreCase))
+        {
+            var session = _sessionService.GetSession(chatId);
+            if (session == null)
+            {
+                await _botClient.SendTextMessageAsync(
+                    chatId, 
+                    "Сначала войдите в аккаунт: /login [логин] [пароль]",
+                    cancellationToken: cancellationToken);
+                return;
+            }
+
+            var ido = text["/order ".Length..].Trim();
+            if (!int.TryParse(ido, out var orderId) || orderId <= 0)
+            {
+                await _botClient.SendTextMessageAsync(
+                    chatId,
+                    "Неверный формат. Корректный пример команды: /order 12", 
+                    cancellationToken: cancellationToken);
+                return;
+            }
+
+            await SendOrderDetailsAsync(chatId, session, orderId, cancellationToken);
             return;
         }
 
@@ -143,32 +172,57 @@ public class UpdateHandler
             return;
         }
 
-        switch (text)
+        var action = text.ToLowerInvariant() switch
         {
-            case "/start":
+            "/start" or "🏠 запуск бота" => "start",
+            "/help" or "❓ помощь" => "help",
+            "/restaurants" or "📍 рестораны" => "restaurants",
+            "/profile" or "👤 профиль" => "profile",
+            "/orders" or "📦 заказы" => "orders",
+            "/cart" or "🛒 корзина" => "cart",
+            "/clearcart" or "🧹 очистить корзину" => "clearcart",
+            _ => null
+        };
+
+        switch (action)
+        {
+            case "start":
                 await _botClient.SendTextMessageAsync(
                     chatId: chatId,
                     text:
-                        "Добро пожаловать!\n\nСписок команд:\n" +
+                        "Добро пожаловать в сервис DelFood!\n\n",
+                        //"Ознакомиться со списком команд можно с помощью /help.",
+                    replyMarkup: GetMainKeyboard(),
+                    cancellationToken: cancellationToken
+                );
+                break;
+
+            case "help":
+                await _botClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text:
+                        "Список доступных команд:\n" +
                         "📍 /restaurants — список ресторанов\n" +
                         "📋 /menu [ID] — меню выбранного ресторана\n\n" +
                         "🔑 /login [логин] [пароль] — войти в аккаунт\n" +
                         "👤 /profile — мой профиль\n" +
                         "📦 /orders — мои заказы\n\n" +
+                        "📜 /order [orderId] — детали конкретного заказа\n" +
                         "🛒 /cart — моя корзина\n" +
                         "✚ /add [restID] [dishID] [quant] — добавить блюдо в корзину\n" +
                         "▬ /remove [position] — удалить позицию в корзине\n" +
                         "🧹 /clearcart — очистить корзину\n" +
                         "🚀 /checkout — оформить заказ\n",
+                    replyMarkup: GetMainKeyboard(),
                     cancellationToken: cancellationToken
                 );
                 break;
 
-            case "/restaurants":
+            case "restaurants":
                 await SendRestaurantsListAsync(chatId, cancellationToken);
                 break;
 
-            case "/profile":
+            case "profile":
                 var profileSession = _sessionService.GetSession(chatId);
                 if (profileSession == null)
                 {
@@ -182,7 +236,7 @@ public class UpdateHandler
                 await SendProfileAsync(chatId, profileSession, cancellationToken);
                 break;
 
-            case "/orders":
+            case "orders":
                 var orderSession = _sessionService.GetSession(chatId);
                 if (orderSession == null)
                 {
@@ -196,7 +250,7 @@ public class UpdateHandler
                 await SendOrdersAsync(chatId, orderSession, cancellationToken);
                 break;
 
-            case "/cart":
+            case "cart":
                 var cartSession = _sessionService.GetSession(chatId);
                 if (cartSession == null)
                 {
@@ -210,7 +264,7 @@ public class UpdateHandler
                 await SendCartAsync(chatId, cartSession, cancellationToken);
                 break;
 
-            case "/clearcart":
+            case "clearcart":
                 var clearSession = _sessionService.GetSession(chatId);
                 if (clearSession == null)
                 {
@@ -225,7 +279,7 @@ public class UpdateHandler
                 await _botClient.SendTextMessageAsync(chatId, "Корзина очищена.", cancellationToken: cancellationToken);
                 break;
 
-            case "/checkout":
+            case "checkout":
                 var checkoutSession = _sessionService.GetSession(chatId);
                 if (checkoutSession == null)
                 {
@@ -498,9 +552,9 @@ public class UpdateHandler
             foreach (var order in orders) // orders.Take(5) - 5 последних
             {
                 var total = order.Items.Sum(i => i.UnitPrice * i.Quantity);
-                message += $"№{order.OrderId} | {order.RestaurantName}\n";
+                message += $"[id: {order.OrderId}] | {order.RestaurantName}\n";
                 message += $"Статус: {order.StatusName}\n";
-                message += $"Создан: {order.CreatedAt:dd.MM.yyyy HH:mm}\n";
+                message += $"Дата и время: {order.CreatedAt:dd.MM.yyyy HH:mm}\n";
                 message += $"Итого: {total:F2} ₽\n\n";
             }
 
@@ -512,6 +566,50 @@ public class UpdateHandler
             await _botClient.SendTextMessageAsync(
                 chatId,
                 "❌ Не удалось загрузить заказы. Возможно, сессия устарела — войдите снова.",
+                cancellationToken: cancellationToken);
+        }
+    }
+
+    private async Task SendOrderDetailsAsync(long chatId, UserSession session, int orderId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var order = await _apiService.GetOrderByIdAsync(orderId, session.Customer.CustomerId, session.Token, cancellationToken);
+
+            if (order == null)
+            {
+                await _botClient.SendTextMessageAsync(
+                    chatId,
+                    "Заказ не найден.",
+                    cancellationToken: cancellationToken);
+                return;
+            }
+
+            var total = order.Items.Sum(i => i.UnitPrice * i.Quantity);
+            var message = $"📋 Заказ №{order.OrderId}\n\n" +
+                          $"Ресторан: {order.RestaurantName}\n" +
+                          $"Статус: {order.StatusName}\n" +
+                          $"Дата: {order.CreatedAt:dd.MM.yyyy HH:mm}\n\n" +
+                          $"Блюда:\n";
+
+            foreach (var item in order.Items)
+            {
+                message += $"• {item.DishName} — {item.UnitPrice:F2} ₽ × {item.Quantity}\n";
+            }
+
+            message += $"\nИтого: {total:F2} ₽";
+
+            await _botClient.SendTextMessageAsync(
+                chatId, 
+                message,
+                cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка получения заказа: {ex}");
+            await _botClient.SendTextMessageAsync(
+                chatId,
+                "❌ Не удалось загрузить заказ. Попробуйте позже.",
                 cancellationToken: cancellationToken);
         }
     }
@@ -568,5 +666,20 @@ public class UpdateHandler
                 "❌ Не удалось оформить заказ. Возможно, сессия устарела — войдите снова.",
                 cancellationToken: cancellationToken);
         }
+    }
+
+    private static ReplyKeyboardMarkup GetMainKeyboard()
+    {
+        return new ReplyKeyboardMarkup(new[]
+        {
+        new KeyboardButton[] { "📍 Рестораны", "📦 Заказы" },
+        new KeyboardButton[] { "🛒 Корзина", "👤 Профиль" },
+        new KeyboardButton[] { "🧹 Очистить корзину", "❓ Помощь" },
+        new KeyboardButton[] { "🏠 Запуск бота" }
+    })
+        {
+            ResizeKeyboard = true,
+            OneTimeKeyboard = false
+        };
     }
 }

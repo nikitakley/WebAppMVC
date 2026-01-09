@@ -99,6 +99,12 @@ public class ApiService
         return orders ?? new List<OrderDtoCustomer>();
     }
 
+    public async Task<OrderDtoCustomer?> GetOrderByIdAsync(int orderId, int customerId, string token, CancellationToken ct = default)
+    {
+        var orders = await GetOrdersByCustomerAsync(customerId, token, ct);
+        return orders.FirstOrDefault(o => o.OrderId == orderId);
+    }
+
     public async Task<OrderResponseDto> CreateOrderAsync(OrderRequestDto orderDto, string token, CancellationToken ct = default)
     {
         var json = JsonSerializer.Serialize(orderDto);
